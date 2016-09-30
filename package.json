@@ -1,0 +1,22 @@
+{
+  "name": "vue-sync",
+  "version": "1.0.0",
+  "description": "Sync Vue state with other places.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/buhrmi/vue-sync.git"
+  },
+  "keywords": [
+    "vue"
+  ],
+  "author": "Stefan Buhrmester <buhrmi@gmail.com> (http://github.com/buhrmi)",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/buhrmi/vue-sync/issues"
+  },
+  "homepage": "https://github.com/buhrmi/vue-sync#readme"
+}
