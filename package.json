@@ -1,6 +1,6 @@
 {
   "name": "vue-sync",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sync Vue state with other places.",
   "main": "index.js",
   "scripts": {
