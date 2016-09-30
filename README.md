@@ -34,13 +34,14 @@ General usage
 
 Sync state with browser URL
 
-    locationStrategy = VueSync.locationStrategy()
+    sync = VueSync.locationStrategy()
+    
     new Vue({
       data: {
         currentPage: 'users'
       },
       sync: {
-        currentPage: locationStrategy('page')
+        currentPage: sync('page')
       }
     })
     
