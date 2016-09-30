@@ -19,7 +19,9 @@
       pattern = new RegExp('\\b' + paramName + '=(.*?)(&|$)');
       result = pattern.exec(url);
       if ((result != null ? result.length : void 0) >= 1) {
-        return decodeURIComponent(result[1]);
+        var val = decodeURIComponent(result[1]);
+        if (val == 'false') return false;
+        return val;
       }
     };
 
