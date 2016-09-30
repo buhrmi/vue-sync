@@ -61,7 +61,19 @@ Sync state with local storage
 
 Sync state with a backend API
 
-> Coming soon
+    serverSync = VueSync.websocketStrategy('ws://localhost:8000')
+    
+    new Vue({
+      data: {
+        currentPage: 'users',
+        users: [{name: 'Stefan'}, {name: 'John'}]
+      },
+      sync: {
+        users: serverSync()
+      }
+    })
+
+The current implementation of `websocketStrategy` simply sends a JSON message of the format `[key, value]` to the server whenever the state changes. Similarily, when the client receives a message of the form `[key, value]` from the server, the state is updated in the client. A very simple example server can be found here `https://github.com/buhrmi/editor/blob/master/server.js` as a starting point.
 
 #### WebRTC
 
