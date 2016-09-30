@@ -1,4 +1,83 @@
 (function () {
+  var noopStrategy = function(initOptions) {
+    return function(keyOptions) {
+      return function(vm, path) {
+        
+        // Set up incoming changes FROM remote
+        
+        vm.$watch(path, function(val1, val2) {
+          // Send changes to remote
+        });
+        
+        return function() {
+          // Stop syncing, deconstruct, etc.
+        }
+      }
+    }
+  }
+  
+  var websocketStrategy = function(serverAddr) {
+    if (typeof serverAddr == 'undefined') serverAddr = 'ws://' + window.location.host;
+    
+    var socket = new WebSocket(serverAddr)
+    
+    return function(keyOptions) {
+      return function(vm, path) {
+        
+        socket.addEventListener('message', function(event) {
+          var message = JSON.parse(event.data);
+          console.log('got', message)
+          if (message[0] == path) vm.$set(message[0], message[1]);
+        })
+        
+        vm.$watch(path, function(newVal, oldVal) {
+          socket.send(JSON.stringify([path, newVal]));
+        });
+        
+        return function() {
+          // Stop syncing, deconstruct, etc.
+        }
+      }
+    }
+  }
+  
+  var webrtcStrategy = function(remoteAddr) {
+    if (typeof webkitRTCPeerConnection !== 'undefined') var RTCPeerConnection = webkitRTCPeerConnection;
+    var connection = new RTCPeerConnection(null);
+    var sendChannel = connection.createDataChannel("sendChannel");
+    
+    function handleSendChannelStatusChange(s) { console.log(s) };
+    function receiveChannelCallback() {};
+    function handleAddCandidateError(e) { console.error(e); }
+    
+    connection.onicecandidate = function(e) {
+      return !e.candidate || connection.addIceCandidate(e.candidate).catch(handleAddCandidateError);
+    }
+    
+    connection.ondatachannel = receiveChannelCallback;
+    
+    sendChannel.onopen = handleSendChannelStatusChange;
+    sendChannel.onclose = handleSendChannelStatusChange;
+    
+    connection.createOffer().then(function(offer) {
+      connection.setLocalDescription(offer)
+    })
+    
+    return function() {
+      return function(vm, path) {    
+        // Set up incoming changes FROM remote
+        
+        vm.$watch(path, function(val1, val2) {
+          // Send changes to remote
+        });
+        return function() {
+          // Stop syncing, deconstruct, etc.
+        }
+      }
+    }
+  }
+  
+  
   var locationStrategy = function() {
     
     var changeUrl, duringPopState, findParam, newValue, popHandler;
@@ -102,6 +181,8 @@
 
   var api = {
     locationStrategy: locationStrategy,
+    webrtcStrategy: webrtcStrategy,
+    websocketStrategy: websocketStrategy,
     mixin: sync,
     install: function (Vue, options) {
       vue = Vue
