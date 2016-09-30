@@ -46,7 +46,7 @@ Sync state with browser URL
     
 `locationStrategy(parameterName, noHistory = false)`
 
-* `parameterName`: (String) The parameter in the browser to sync with the key. For example, `page` will store the state in an URL that looks something like `http://somedomain.com/somesite/?page=users`
+* `parameterName`: (String) The parameter in the browser URL to use to sync with the Vue key. In the above example, the strategy will sync the value of `currentPage` with an URL that might look something like `http://somedomain.com/somesite/?page=users`
 * `noHistory`: (Boolean) Whether or not a browser history entry should be created every time the value changes. This enables or prevents the user to change Vue state using the navigation buttons of the browser.
 
 
