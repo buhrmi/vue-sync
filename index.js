@@ -23,15 +23,17 @@
     
     return function(keyOptions) {
       return function(vm, path) {
+        var currentlyUpdatingFromServer = false
         
         socket.addEventListener('message', function(event) {
+          currentlyUpdatingFromServer = true
           var message = JSON.parse(event.data);
-          console.log('got', message)
           if (message[0] == path) vm.$set(message[0], message[1]);
+          vm.$nextTick(function() { currentlyUpdatingFromServer = false; })
         })
         
         vm.$watch(path, function(newVal, oldVal) {
-          socket.send(JSON.stringify([path, newVal]));
+          if (!currentlyUpdatingFromServer) socket.send(JSON.stringify([path, newVal]));
         });
         
         return function() {
