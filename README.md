@@ -2,6 +2,7 @@
 
 > Allows you to synchronize state of your vue components with other places.
 > Currently there are plans for different synchronization strategies:
+>
 > 1. [x] Browser URL 
 > 2. [ ] Browser local storage
 > 3. [ ] Server API
@@ -9,7 +10,7 @@
 
 ## Install
 
-  $ npm install vue-sync
+    $ npm install vue-sync
   
 ## Usage
 
