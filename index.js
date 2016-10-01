@@ -30,11 +30,18 @@
           var message = JSON.parse(event.data);
           if (message[0] == path) vm.$set(message[0], message[1]);
           vm.$nextTick(function() { currentlyUpdatingFromServer = false; })
+          // currentlyUpdatingFromServer = false; 
         })
         
-        vm.$watch(path, function(newVal, oldVal) {
-          if (!currentlyUpdatingFromServer) socket.send(JSON.stringify([path, newVal]));
-        });
+        vm.$watch(path,
+          function(newVal, oldVal) {
+            if (!currentlyUpdatingFromServer) socket.send(JSON.stringify([path, newVal]));
+          },
+          {
+            deep: true,
+            immidiate: true
+          }
+        );
         
         return function() {
           // Stop syncing, deconstruct, etc.
