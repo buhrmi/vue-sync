@@ -3,10 +3,10 @@
 > Synchronizes the state of vue components with other places.
 > Currently there are plans for different synchronization strategies:
 >
-> 1. [x] Browser URL 
-> 2. [ ] Browser local storage
-> 3. [ ] Server API / websockets
-> 4. [ ] WebRTC
+> [x] Browser URL 
+> [X] Native Websockets (experimental)
+> [ ] Browser local storage
+> [ ] WebRTC
 
 ## Install
 
@@ -32,7 +32,7 @@ General usage
 
 #### Browser URL
 
-Sync state with browser URL
+Sync Vue state with parameters in the browser url. Makes for very easy bookmarking and sharing of vue state.
 
     sync = VueSync.locationStrategy()
     
@@ -44,22 +44,16 @@ Sync state with browser URL
         currentPage: sync('page')
       }
     })
-    
+
 `locationStrategy(parameterName, noHistory = false)`
 
 * `parameterName`: (String) The parameter in the browser URL to use to sync with the Vue key. In the above example, the strategy will sync the value of `currentPage` with an URL that might look something like `http://somedomain.com/somesite/?page=users`
 * `noHistory`: (Boolean) Whether or not a browser history entry should be created every time the value changes. This enables or prevents the user to change Vue state using the navigation buttons of the browser.
 
 
-#### Local Storage
+#### Websockets
 
-Sync state with local storage
-
-> Coming soon
-
-#### Server API
-
-Sync state with a backend API
+Sync state with a websocket server. Still very experimental.
 
     serverSync = VueSync.websocketStrategy('ws://localhost:8000')
     
@@ -73,7 +67,19 @@ Sync state with a backend API
       }
     })
 
-The current implementation of `websocketStrategy` simply sends a JSON message of the format `[key, value]` to the server whenever the state changes. Similarily, when the client receives a message of the form `[key, value]` from the server, the state is updated in the client. A very simple example server can be found here `https://github.com/buhrmi/editor/blob/master/server.js` as a starting point.
+The current implementation of `websocketStrategy` simply sends a JSON message of the format `[key, value]` to the server whenever the state changes. Similarily, when the client receives a message of the form `[key, value]` from the server, the state is updated in the client.
+
+A very simple websocket server that synchronizes vue state accross all connected clients can be run like this:
+
+    var server = require('vue-sync-server')(8000)
+    
+Check out the [vue-sync-server](http://github.com/buhrmi/vue-sync-server) project for more information.
+
+#### Local Storage
+
+Sync state with local storage
+
+> Coming soon
 
 #### WebRTC
 
