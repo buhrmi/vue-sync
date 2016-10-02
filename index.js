@@ -1,4 +1,6 @@
 (function () {
+  var vue;
+  
   var noopStrategy = function(initOptions) {
     return function(keyOptions) {
       return function(vm, path) {
@@ -28,7 +30,7 @@
         socket.addEventListener('message', function(event) {
           currentlyUpdatingFromServer = true
           var message = JSON.parse(event.data);
-          if (message[0] == path) Vue.set(vm, message[0], message[1]);
+          if (message[0] == path) vue.set(vm, message[0], message[1]);
           vm.$nextTick(function() { currentlyUpdatingFromServer = false; })
           // currentlyUpdatingFromServer = false; 
         })
@@ -123,7 +125,7 @@
           duringPopState = true;
           newValue = findParam(param);
           if (newValue) {
-            Vue.set(vm, path, newValue);
+            vue.set(vm, path, newValue);
           }
           vm.$nextTick(function() {
             duringPopState = false;
@@ -135,7 +137,7 @@
         newValue = findParam(param);
 
         if (newValue) {
-          Vue.set(vm, path, newValue);
+          vue.set(vm, path, newValue);
         }
         else {
           var newUrl = changeUrl(param, vm.$get(path));
@@ -164,8 +166,6 @@
   }
   
 
-
-  var vue // lazy bind
 
   var sync = {
     created: function () {
