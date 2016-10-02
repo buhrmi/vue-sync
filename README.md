@@ -8,6 +8,8 @@
 > 3. [ ] Server API / websockets
 > 4. [ ] WebRTC
 
+# Note: Only works with Vue 2.0
+
 ## Install
 
     $ npm install vue-sync

@@ -28,7 +28,7 @@
         socket.addEventListener('message', function(event) {
           currentlyUpdatingFromServer = true
           var message = JSON.parse(event.data);
-          if (message[0] == path) vm.$set(message[0], message[1]);
+          if (message[0] == path) Vue.set(vm, message[0], message[1]);
           vm.$nextTick(function() { currentlyUpdatingFromServer = false; })
           // currentlyUpdatingFromServer = false; 
         })
@@ -123,7 +123,7 @@
           duringPopState = true;
           newValue = findParam(param);
           if (newValue) {
-            vm.$set(path, newValue);
+            Vue.set(vm, path, newValue);
           }
           vm.$nextTick(function() {
             duringPopState = false;
@@ -135,7 +135,7 @@
         newValue = findParam(param);
 
         if (newValue) {
-          vm.$set(path, newValue);
+          Vue.set(vm, path, newValue);
         }
         else {
           var newUrl = changeUrl(param, vm.$get(path));
@@ -174,7 +174,7 @@
         return
       }
     },
-    compiled: function() {
+    mounted: function() {
       var syncOptions = this.$options.sync;
       if (typeof syncOptions == 'function') syncOptions = syncOptions();
       if (syncOptions) {
