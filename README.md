@@ -3,10 +3,10 @@
 > Synchronizes the state of vue components with other places.
 > Currently there are plans for different synchronization strategies:
 >
-> [x] Browser URL 
-> [X] Native Websockets (experimental)
-> [ ] Browser local storage
-> [ ] WebRTC
+> 1. [x] Browser URL 
+> 2. [X] Native Websockets (experimental)
+> 3. [ ] Browser local storage
+> 4. [ ] WebRTC
 
 ## Install
 
