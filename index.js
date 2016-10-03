@@ -18,6 +18,39 @@
     }
   }
   
+  var localStrategy = function() {
+    return function(storageName) {
+      return function(vm, path) {
+        
+        var currentlyUpdating = false;
+        window.addEventListener('storage', function(event) {
+          if (event.key == storageName + path && !currentlyUpdating) vue.set(vm, event.key.replace(storageName, ''), JSON.parse(event.newValue));
+          currentlyUpdating = true
+          vm.$nextTick(function() { currentlyUpdating = false; })
+        })
+        
+        var existingValue = localStorage.getItem(storageName+path);
+        if (existingValue) vue.set(vm, path, JSON.parse(existingValue));
+        
+        vm.$watch(path, function(newVal, oldVal) {
+          if (currentlyUpdating) return;
+          currentlyUpdating = true;
+          // console.log('adasd', storageName + path, JSON.stringify(newVal));
+          localStorage.setItem(storageName + path, JSON.stringify(newVal));
+          vm.$nextTick(function() { currentlyUpdating = false; })
+        },
+        {
+          deep: true,
+          immidiate: true
+        });
+        
+        return function() {
+          // Stop syncing, deconstruct, etc.
+        }
+      }
+    }
+  }
+  
   var websocketStrategy = function(serverAddr) {
     if (typeof serverAddr == 'undefined') serverAddr = 'ws://' + window.location.host;
     
@@ -192,6 +225,7 @@
     locationStrategy: locationStrategy,
     webrtcStrategy: webrtcStrategy,
     websocketStrategy: websocketStrategy,
+    localStrategy: localStrategy,
     mixin: sync,
     install: function (Vue, options) {
       vue = Vue

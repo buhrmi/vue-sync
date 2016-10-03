@@ -1,12 +1,12 @@
 # vue-sync
 
-> Synchronizes the state of vue components with other places.
-> Currently there are plans for different synchronization strategies:
+> Attach synchronization to vue data fields and synchronize the values using synchronization strategies.
+> Currently there are four different synchronization strategies:
 >
-> 1. [x] Browser URL 
-> 2. [X] Native Websockets (experimental)
-> 3. [ ] Browser local storage
-> 4. [ ] WebRTC
+> 1. [x] Browser URL: Keep track of vue data in the browser URL and restore vue state when users share the URL or use the browser navigation buttons.
+> 2. [X] Native Websockets (experimental): Sync vue data across multiple clients connected to the server.
+> 3. [X] Browser local storage: Easily keep vue data in sync between between multiple browser tabs.
+> 4. [ ] WebRTC (not yet implemented)
 
 # Note: Only works with Vue 2.0
 
@@ -79,9 +79,18 @@ Check out the [vue-sync-server](http://github.com/buhrmi/vue-sync-server) projec
 
 #### Local Storage
 
-Sync state with local storage
+Sync state with local storage. This will keep vue data in sync between multiple browser tabs and restore the data when reloading the page.
 
-> Coming soon
+    var localSync = VueSync.localStrategy()
+    
+    new Vue({
+      data: {
+        draft: 'My important memo'
+      },
+      sync: {
+        draft: localSync('app_data') // in this example, app_data is the namespace
+      }
+    })
 
 #### WebRTC
 
