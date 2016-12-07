@@ -127,6 +127,10 @@
     var changeUrl, duringPopState, findParam, newValue, popHandler;
     changeUrl = function(paramName, paramValue) {
       var pattern, url;
+      if (typeof(paramValue) == 'object') {
+        paramValue = JSON.stringify(paramValue);
+      }
+      paramValue = encodeURIComponent(paramValue);
       url = window.location.toString();
       pattern = new RegExp('\\b(' + paramName + '=).*?(&|$)');
       if (url.search(pattern) >= 0) {
@@ -143,6 +147,12 @@
       result = pattern.exec(url);
       if ((result != null ? result.length : void 0) >= 1) {
         var val = decodeURIComponent(result[1]);
+        try {
+          val = JSON.parse(val);
+        }
+        catch (e) {
+          // Wasnt json. Do nothing.
+        }
         if (val == 'false') return false;
         return val;
       }
@@ -190,7 +200,7 @@
           else {
             history.pushState(null, '', newUrl);  
           }
-        });
+        }, {deep: true});
         return function() {
           // STOP syncing
         }
