@@ -183,7 +183,7 @@
           vue.set(vm, path, newValue);
         }
         else {
-          var newUrl = changeUrl(param, vm.$get(path));
+          var newUrl = changeUrl(param, vm[path]);
           history.replaceState(null, '', newUrl);
         }
         
