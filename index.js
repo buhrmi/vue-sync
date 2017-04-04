@@ -51,76 +51,6 @@
     }
   }
   
-  var websocketStrategy = function(serverAddr) {
-    if (typeof serverAddr == 'undefined') serverAddr = 'ws://' + window.location.host;
-    
-    var socket = new WebSocket(serverAddr)
-    
-    return function(keyOptions) {
-      return function(vm, path) {
-        var currentlyUpdatingFromServer = false
-        
-        socket.addEventListener('message', function(event) {
-          currentlyUpdatingFromServer = true
-          var message = JSON.parse(event.data);
-          if (message[0] == path) vue.set(vm, message[0], message[1]);
-          vm.$nextTick(function() { currentlyUpdatingFromServer = false; })
-          // currentlyUpdatingFromServer = false; 
-        })
-        
-        vm.$watch(path,
-          function(newVal, oldVal) {
-            if (!currentlyUpdatingFromServer) socket.send(JSON.stringify([path, newVal]));
-          },
-          {
-            deep: true,
-            immidiate: true
-          }
-        );
-        
-        return function() {
-          // Stop syncing, deconstruct, etc.
-        }
-      }
-    }
-  }
-  
-  var webrtcStrategy = function(remoteAddr) {
-    if (typeof webkitRTCPeerConnection !== 'undefined') var RTCPeerConnection = webkitRTCPeerConnection;
-    var connection = new RTCPeerConnection(null);
-    var sendChannel = connection.createDataChannel("sendChannel");
-    
-    function handleSendChannelStatusChange(s) { console.log(s) };
-    function receiveChannelCallback() {};
-    function handleAddCandidateError(e) { console.error(e); }
-    
-    connection.onicecandidate = function(e) {
-      return !e.candidate || connection.addIceCandidate(e.candidate).catch(handleAddCandidateError);
-    }
-    
-    connection.ondatachannel = receiveChannelCallback;
-    
-    sendChannel.onopen = handleSendChannelStatusChange;
-    sendChannel.onclose = handleSendChannelStatusChange;
-    
-    connection.createOffer().then(function(offer) {
-      connection.setLocalDescription(offer)
-    })
-    
-    return function() {
-      return function(vm, path) {    
-        // Set up incoming changes FROM remote
-        
-        vm.$watch(path, function(val1, val2) {
-          // Send changes to remote
-        });
-        return function() {
-          // Stop syncing, deconstruct, etc.
-        }
-      }
-    }
-  }
-  
   
   var locationStrategy = function() {
     
@@ -134,9 +64,12 @@
       url = window.location.toString();
       pattern = new RegExp('\\b(' + paramName + '=).*?(&|$)');
       if (url.search(pattern) >= 0) {
-        return url.replace(pattern, '$1' + paramValue + '$2');
+        console.log(paramValue)
+        if (typeof paramValue == 'undefined') return url.replace(pattern, '');
+        else return url.replace(pattern, '$1' + paramValue + '$2');
       } else {
-        return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+        if (typeof paramValue == 'undefined') return url;
+        else return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
       }
     };
 
@@ -186,7 +119,7 @@
           var newUrl = changeUrl(param, vm[path]);
           history.replaceState(null, '', newUrl);
         }
-        
+
         vm.$watch(path, function(val1, val2) {
           var newUrl;
           if (duringPopState) {
@@ -218,12 +151,13 @@
       }
     },
     mounted: function() {
-      var syncOptions = this.$options.sync;
-      if (typeof syncOptions == 'function') syncOptions = syncOptions();
-      if (syncOptions) {
-        for (var key in syncOptions) {
-          if (syncOptions.hasOwnProperty(key)) {
-            var syncFn = syncOptions[key]
+      var urlOptions = this.$options.url;
+      var urlSync = locationStrategy()
+      if (typeof urlOptions == 'function') urlOptions = urlOptions();
+      if (urlOptions) {
+        for (var key in urlOptions) {
+          if (urlOptions.hasOwnProperty(key)) {
+            var syncFn = urlSync(urlOptions[key])
             var stopFunc = syncFn(this, key);
           } 
         }   
@@ -232,10 +166,6 @@
   }
 
   var api = {
-    locationStrategy: locationStrategy,
-    webrtcStrategy: webrtcStrategy,
-    websocketStrategy: websocketStrategy,
-    localStrategy: localStrategy,
     mixin: sync,
     install: function (Vue, options) {
       vue = Vue

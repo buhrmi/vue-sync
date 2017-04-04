@@ -1,7 +1,7 @@
 {
   "name": "vue-sync",
-  "version": "2.0.4",
-  "description": "Sync Vue state with other places.",
+  "version": "3.0.0",
+  "description": "Sync Vue state with the browser URL. Simpler than vue-router.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
