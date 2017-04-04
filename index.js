@@ -54,25 +54,24 @@
   
   var locationStrategy = function() {
     
-    var changeUrl, duringPopState, findParam, newValue, popHandler;
-    changeUrl = function(paramName, paramValue) {
+    var getUrlWithParamValue, duringPopState, getParamValue, newValue, popHandler;
+    getUrlWithParamValue = function(paramName, paramValue) {
       var pattern, url;
-      if (typeof(paramValue) == 'object') {
+      if (paramValue && typeof(paramValue) == 'object') {
         paramValue = JSON.stringify(paramValue);
       }
-      paramValue = encodeURIComponent(paramValue);
       url = window.location.toString();
       pattern = new RegExp('\\b(' + paramName + '=).*?(&|$)');
       if (url.search(pattern) >= 0) {
-        if (typeof paramValue == 'undefined') return url.replace(pattern, '');
-        else return url.replace(pattern, '$1' + paramValue + '$2');
+        if (!paramValue) return url.replace(pattern, '').replace('&&','&').replace('?&','?');
+        else return url.replace(pattern, '$1' + encodeURIComponent(paramValue) + '$2');
       } else {
-        if (typeof paramValue == 'undefined') return url;
-        else return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+        if (!paramValue) return url;
+        else return (url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + encodeURIComponent(paramValue)).replace('&&','&').replace('?&','?');
       }
     };
 
-    findParam = function(paramName) {
+    getParamValue = function(paramName) {
       var pattern, result, url;
       url = window.location.toString();
       pattern = new RegExp('\\b' + paramName + '=(.*?)(&|$)');
@@ -98,7 +97,7 @@
       return function(vm, path) {
         popHandler = function() {
           duringPopState = true;
-          newValue = findParam(param);
+          newValue = getParamValue(param);
           if (newValue) {
             vue.set(vm, path, newValue);
           }
@@ -109,13 +108,13 @@
 
         window.addEventListener('popstate', popHandler);
         
-        newValue = findParam(param);
+        newValue = getParamValue(param);
 
         if (newValue) {
           vue.set(vm, path, newValue);
         }
         else {
-          var newUrl = changeUrl(param, vm[path]);
+          var newUrl = getUrlWithParamValue(param, vm[path]);
           history.replaceState(null, '', newUrl);
         }
 
@@ -124,7 +123,7 @@
           if (duringPopState) {
             return;
           }
-          newUrl = changeUrl(param, val1);
+          newUrl = getUrlWithParamValue(param, val1);
           
           if (noHistory) {
             history.replaceState(null, '', newUrl);
