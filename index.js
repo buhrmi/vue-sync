@@ -64,7 +64,6 @@
       url = window.location.toString();
       pattern = new RegExp('\\b(' + paramName + '=).*?(&|$)');
       if (url.search(pattern) >= 0) {
-        console.log(paramValue)
         if (typeof paramValue == 'undefined') return url.replace(pattern, '');
         else return url.replace(pattern, '$1' + paramValue + '$2');
       } else {

@@ -1,6 +1,6 @@
 {
   "name": "vue-sync",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Sync Vue state with the browser URL. Simpler than vue-router.",
   "main": "index.js",
   "scripts": {
