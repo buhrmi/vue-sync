@@ -1,22 +1,6 @@
 (function () {
   var vue;
-  
-  var noopStrategy = function(initOptions) {
-    return function(keyOptions) {
-      return function(vm, path) {
-        
-        // Set up incoming changes FROM remote
-        
-        vm.$watch(path, function(val1, val2) {
-          // Send changes to remote
-        });
-        
-        return function() {
-          // Stop syncing, deconstruct, etc.
-        }
-      }
-    }
-  }
+
   
   var localStrategy = function() {
     return function(storageName) {
@@ -85,33 +69,18 @@
           // Wasnt json. Do nothing.
         }
         if (val == 'false') return false;
+        if (typeof val == 'undefined') return null;
         return val;
       }
     };
 
     duringPopState = false;
 
-
-    
     return function(param, noHistory) {
       return function(vm, path) {
-        popHandler = function() {
-          duringPopState = true;
-          newValue = getParamValue(param);
-          if (newValue) {
-            vue.set(vm, path, newValue);
-          }
-          vm.$nextTick(function() {
-            duringPopState = false;
-          });
-        };  
-
-        window.addEventListener('popstate', popHandler);
-        
-        newValue = getParamValue(param);
-
-        if (newValue) {
-          vue.set(vm, path, newValue);
+        initialUrlValue = getParamValue(param);
+        if (initialUrlValue) {
+          vue.set(vm, path, initialUrlValue);
         }
         else {
           var newUrl = getUrlWithParamValue(param, vm[path]);
@@ -120,6 +89,7 @@
 
         vm.$watch(path, function(val1, val2) {
           var newUrl;
+
           if (duringPopState) {
             return;
           }
@@ -131,15 +101,27 @@
           else {
             history.pushState(null, '', newUrl);  
           }
-        }, {deep: true});
+          // manually trigger a popstate event to allow other components pick up the change.
+          dispatchEvent(new PopStateEvent('popstate', { state: null }));
+        }, {deep: true, sync: true});
+        
+        popHandler = function() {
+          duringPopState = true;
+          newValue = getParamValue(param);
+          vue.set(vm, path, newValue);
+          vm.$nextTick(function() {
+            duringPopState = false;
+          });
+        };  
+        
+        window.addEventListener('popstate', popHandler);
         return function() {
-          // STOP syncing
+          window.removeEventListener('popstate', popHandler)
         }
       }
     }
   }
   
-
 
   var sync = {
     created: function () {
@@ -148,17 +130,22 @@
         return
       }
     },
-    mounted: function() {
+    destroyed: function() {
+      this._stopSyncFuncs.map(function(fn) {fn()});
+    },
+    created: function() {
       var urlOptions = this.$options.url;
       var urlSync = locationStrategy()
+      var vm = this;
+      vm._stopSyncFuncs = []
       if (typeof urlOptions == 'function') urlOptions = urlOptions();
       if (urlOptions) {
-        for (var key in urlOptions) {
+        Object.keys(urlOptions).map(function(key) {
           if (urlOptions.hasOwnProperty(key)) {
             var syncFn = urlSync(urlOptions[key])
-            var stopFunc = syncFn(this, key);
+            vm._stopSyncFuncs.push(syncFn(vm, key));
           } 
-        }   
+        })
       }
     }
   }
