@@ -1,0 +1,31 @@
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.0/vue.js"></script>
+  <script src="../index.js"></script>
+</head>
+<body>
+  <div class="app">
+    <p>Changeable with browser History: {{ withHistory}} <button @click="withHistory++">Increment</button></p>
+    <p>Not changeable with history: {{ noHistory }} <button @click="noHistory++">Increment</button></p>
+  </div>
+  <script type="text/javascript">
+    Vue.use(VueSync)
+    new Vue({
+      data: function() {
+        return {
+          withHistory: '0',
+          noHistory: '0'
+        }
+      },
+      url: {
+        withHistory: 'withHistory',
+        noHistory: {
+          param: 'noHistory',
+          noHistory: true
+        }
+      }, 
+      el: '.app'
+    })
+  </script>
+</body>
+</html>

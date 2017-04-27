@@ -23,6 +23,21 @@ Sync Vue state with parameters in the browser url. Makes for very easy bookmarki
       }
     })
 
+If you don't want to add a browser history entry when the value changes, use the `noHistory` option.
+  
+  new Vue({
+    data: {
+      currentPage: 'users'
+    },
+    url: {
+      currentPage: {
+        param: 'page',
+        noHistory: true
+      }
+    }
+  })
+
+
 #### Local Storage
 
 Sync state with local storage. This will keep vue data in sync between multiple browser tabs and restore the data when reloading the page.
