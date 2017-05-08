@@ -34,17 +34,17 @@ The below example will sync the value of `currentPage` with the URL parameter va
 
 If you don't want to add a browser history entry when the value changes, use the `noHistory` option.
   
-  new Vue({
-    data: {
-      currentPage: 'users'
-    },
-    url: {
-      currentPage: {
-        param: 'page',
-        noHistory: true
+    new Vue({
+      data: {
+        currentPage: 'users'
+      },
+      url: {
+        currentPage: {
+          param: 'page',
+          noHistory: true
+        }
       }
-    }
-  })
+    })
 
 
 
