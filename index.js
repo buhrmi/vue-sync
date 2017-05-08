@@ -19,7 +19,6 @@
       vm.$watch(path, function(newVal, oldVal) {
         if (currentlyUpdating) return;
         currentlyUpdating = true;
-        // console.log('adasd', storageName + path, JSON.stringify(newVal));
         localStorage.setItem(storageName + path, JSON.stringify(newVal));
         vm.$nextTick(function() { currentlyUpdating = false; })
       },
@@ -114,8 +113,6 @@
         if (duringPopState) return;
         duringPopState = true;
         newValue = getParamValue(param);
-        console.log('setting', path, newValue)
-        console.trace()
         vue.set(vm, path, newValue);
         
         vm.$nextTick(function() {
