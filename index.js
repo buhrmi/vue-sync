@@ -103,13 +103,21 @@
           history.pushState(null, '', newUrl);  
         }
         // manually trigger a popstate event to allow other components pick up the change.
-        dispatchEvent(new PopStateEvent('popstate', { state: null }));
+        // dont dispatch an event when running inside nuxtjs, because it will reset our components when it sees this event
+        if (!vm.$nuxt && typeof PopStateEvent !== 'undefined') {
+          // TODO: instead of dispatching an event, use the shared-state functionality to sync across components.
+          dispatchEvent(new PopStateEvent('popstate', { state: null }));
+        }
       }, {deep: true, sync: true});
       
       popHandler = function() {
+        if (duringPopState) return;
         duringPopState = true;
         newValue = getParamValue(param);
+        console.log('setting', path, newValue)
+        console.trace()
         vue.set(vm, path, newValue);
+        
         vm.$nextTick(function() {
           duringPopState = false;
         });
@@ -125,16 +133,15 @@
 
 
   var sync = {
-    created: function () {
+    destroyed: function() {
+      this._stopSyncFuncs.map(function(fn) {fn()});
+    },
+    asyncData: function() {},
+    created: function() {
       if (!vue) {
         console.warn('[vue-sync] not installed!')
         return
       }
-    },
-    destroyed: function() {
-      this._stopSyncFuncs.map(function(fn) {fn()});
-    },
-    created: function() {
       var vm = this;
       vm._stopSyncFuncs = []
       
@@ -142,12 +149,31 @@
       var urlOptions = this.$options.url;
       if (typeof urlOptions == 'function') urlOptions = urlOptions();
       if (urlOptions) {
-        Object.keys(urlOptions).map(function(key) {
-          if (urlOptions.hasOwnProperty(key)) {
-            var syncFn = getUrlSyncFn(urlOptions[key])
-            vm._stopSyncFuncs.push(syncFn(vm, key));
-          } 
-        })
+        // On the server-side, check if we have a $route, and init the data from there.
+        if (typeof window == 'undefined' && typeof vm.$route !== 'undefined') {
+          Object.keys(urlOptions).map(function(key) {
+            if (!urlOptions.hasOwnProperty(key)) return;
+            var val = decodeURIComponent(vm.$route.query[key]);
+            try {
+              val = JSON.parse(val);
+            }
+            catch (e) {
+              // Wasnt json. Do nothing.
+            }
+            vue.set(vm, key, val)
+          })
+        }
+        else if (typeof window !== 'undefined') {
+          Object.keys(urlOptions).map(function(key) {
+            if (urlOptions.hasOwnProperty(key)) {
+              var syncFn = getUrlSyncFn(urlOptions[key])
+              vm._stopSyncFuncs.push(syncFn(vm, key));
+            } 
+          })
+        }
+        else {
+          console.log('[vue-sync] If you run this server-side, please make available a global `context` object with the request query params.')
+        }
       }
     }
   }

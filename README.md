@@ -3,7 +3,7 @@
 Sync Vue Component state with:
 
 * **URL Parameters**:
-  Makes for easy bookmarking and sharing of vue state using the browser URL
+  Makes for easy bookmarking and sharing of vue state using the browser URL, also works server-side when using vue-router.
 * (TODO) **Local Storage**:
   Easily syncs vue state across multiple browser tabs
 * (TODO) **Global State**:

@@ -1,12 +1,19 @@
 <html>
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.0/vue.js"></script>
-  <script src="../index.js"></script>
+  <script src="https://raw.githubusercontent.com/buhrmi/vue-sync/master/index.js"></script>
 </head>
 <body>
   <div class="app">
     <p>Changeable with browser History: {{ withHistory}} <button @click="withHistory++">Increment</button></p>
     <p>Not changeable with history: {{ noHistory }} <button @click="noHistory++">Increment</button></p>
+    <button v-on:click="add">Add</button>
+  <button v-on:click="remove">Remove</button> (Undo/Redo with Browser Navigation Buttons)
+    <transition-group name="list" tag="p">
+     <span v-for="item in items" v-bind:key="item" class="list-item">
+       {{ item }}
+     </span>
+   </transition-group>
   </div>
   <script type="text/javascript">
     Vue.use(VueSync)
@@ -14,18 +21,51 @@
       data: function() {
         return {
           withHistory: '0',
-          noHistory: '0'
+          noHistory: '0',
+          items: [1,2,3,4,5,6,7,8,9],
+          nextNum: 10
         }
       },
       url: {
+        items: 'items',
         withHistory: 'withHistory',
         noHistory: {
           param: 'noHistory',
           noHistory: true
         }
       }, 
-      el: '.app'
+      el: '.app',
+
+      methods: {
+        randomIndex: function () {
+         return Math.floor(Math.random() * this.items.length)
+        },
+        add: function () {
+          this.items.splice(this.randomIndex(), 0, this.nextNum++)
+        },
+        remove: function () {
+          this.items.splice(this.randomIndex(), 1)
+        }
+      }
     })
   </script>
+  
+  
+  <style media="screen">
+  .list-item {
+transition: all 1s;
+display: inline-block;
+margin-right: 10px;
+}
+.list-enter, .list-leave-to
+/* .list-leave-active for <2.1.8 */ {
+opacity: 0;
+transform: translateY(30px);
+}
+.list-leave-active {
+position: absolute;
+}
+  </style>
+  
 </body>
 </html>
