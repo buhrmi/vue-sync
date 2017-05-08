@@ -1,13 +1,8 @@
 # vue-sync
 
-Sync Vue Component state with:
+Sync Vue Component state with browser URL params
 
-* **URL Parameters**:
-  Makes for easy bookmarking and sharing of vue state using the browser URL, also works server-side when using vue-router.
-* (TODO) **Local Storage**:
-  Easily syncs vue state across multiple browser tabs
-* (TODO) **Global State**:
-  Simple shared state without the Vuex jazz.
+Makes for easy bookmarking and sharing of vue state using the browser URL, also works server-side when using vue-router.
 
 ## Install
 
@@ -22,8 +17,10 @@ Sync Vue state with parameters in the browser url. Makes for very easy bookmarki
 The below example will sync the value of `currentPage` with the URL parameter value `page`.
 
     new Vue({
-      data: {
-        currentPage: 'users'
+      data: function() {
+        return {
+          currentPage: this.currentPage || 'users' // initialize this component data with the url param or set 'users' as a default
+        }
       },
       // sync with URL `http://example.com/?page=amazing-title`
       url: {
@@ -35,8 +32,10 @@ The below example will sync the value of `currentPage` with the URL parameter va
 If you don't want to add a browser history entry when the value changes, use the `noHistory` option.
   
     new Vue({
-      data: {
-        currentPage: 'users'
+      data: function() {
+        return {
+          currentPage: this.currentPage || 'users'
+        }
       },
       url: {
         currentPage: {
