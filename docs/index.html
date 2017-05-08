@@ -5,8 +5,8 @@
 </head>
 <body>
   <div class="app">
-    <p>Changeable with browser History: {{ withHistory}} <button @click="withHistory++">Increment</button></p>
-    <p>Not changeable with history: {{ noHistory }} <button @click="noHistory++">Increment</button></p>
+    <p>With history: {{ withHistory}} <button @click="withHistory++">Increment</button></p>
+    <p>Without history: {{ noHistory }} <button @click="noHistory++">Increment</button></p>
     <button v-on:click="add">Add</button>
   <button v-on:click="remove">Remove</button> (Undo/Redo with Browser Navigation Buttons)
     <transition-group name="list" tag="p">
