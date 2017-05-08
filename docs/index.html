@@ -1,28 +1,43 @@
 <html>
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.0/vue.js"></script>
-  <script src="https://rawgit.com/buhrmi/vue-sync/master/index.js"></script>
+  <!-- <script src="https://rawgit.com/buhrmi/vue-sync/master/index.js"></script> -->
+  <script src="../index.js"></script>
 </head>
 <body>
   <div class="app">
     <p>With history: {{ withHistory}} <button @click="withHistory++">Increment</button></p>
     <p>Without history: {{ noHistory }} <button @click="noHistory++">Increment</button></p>
     <button v-on:click="add">Add</button>
-  <button v-on:click="remove">Remove</button> (Undo/Redo with Browser Navigation Buttons)
+    <button v-on:click="remove">Remove</button> (Undo/Redo with Browser Navigation Buttons)
     <transition-group name="list" tag="p">
      <span v-for="item in items" v-bind:key="item" class="list-item">
        {{ item }}
      </span>
    </transition-group>
+   <subcomponent></subcomponent>
   </div>
   <script type="text/javascript">
     Vue.use(VueSync)
+    Vue.component('subcomponent', {
+      template: '<div>This is a nested component. WithHist value is: {{ withHist }}</div>',
+      data: function() {
+        return {
+          withHist: '123',
+          noHist: '0'
+        }
+      },
+      url: {
+        noHist: 'noHistory',
+        withHist: 'withHistory'
+      }
+    })
     new Vue({
       data: function() {
         return {
           withHistory: '0',
           noHistory: '0',
-          items: [1,2,3,4,5,6,7,8,9],
+          items: [1, 2, 3, 4, 5, 6, 7, 8, 9],
           nextNum: 10
         }
       },

@@ -1,7 +1,8 @@
 (function () {
   var vue;
   var getUrlWithParamValue, duringPopState, getParamValue, newValue, popHandler;
-  
+  var pophandlers = [];
+  var scheduled = false;
   
   var startLocalSync = function(storageName) {
     return function(vm, path) {
@@ -101,28 +102,26 @@
         else {
           history.pushState(null, '', newUrl);  
         }
-        // manually trigger a popstate event to allow other components pick up the change.
-        // dont dispatch an event when running inside nuxtjs, because it will reset our components when it sees this event
-        if (!vm.$nuxt && typeof PopStateEvent !== 'undefined') {
-          // TODO: instead of dispatching an event, use the shared-state functionality to sync across components.
-          dispatchEvent(new PopStateEvent('popstate', { state: null }));
-        }
+        
+        pophandlers.map(function(handler) { 
+          handler() 
+        })
       }, {deep: true, sync: true});
       
-      popHandler = function() {
-        if (duringPopState) return;
+      var handler = function() {
+        // if (duringPopState) return;
         duringPopState = true;
         newValue = getParamValue(param);
         vue.set(vm, path, newValue);
-        
         vm.$nextTick(function() {
           duringPopState = false;
         });
-      };  
+      };
+      pophandlers.push(handler)  
       
-      window.addEventListener('popstate', popHandler);
+      
       return function() {
-        window.removeEventListener('popstate', popHandler)
+      
       }
     }
   }
@@ -161,6 +160,9 @@
           })
         }
         else if (typeof window !== 'undefined') {
+          window.addEventListener('popstate', function() {
+            pophandlers.map(function(h) { h() });
+          });
           Object.keys(urlOptions).map(function(key) {
             if (urlOptions.hasOwnProperty(key)) {
               var syncFn = getUrlSyncFn(urlOptions[key])
