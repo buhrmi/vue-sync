@@ -8,7 +8,7 @@ Makes for easy bookmarking and sharing of vue state using the browser URL, also 
 
 ### With NPM
 
-    $ npm install vue-sync
+    $ npm install --save vue-sync
 
 ```js
 VueSync = require('vue-sync')
