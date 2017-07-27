@@ -1,5 +1,7 @@
 # vue-sync
 
+> NOTE: Please check out [nuxt](http://nuxtjs.org) and [nuxt-url-sync](https://github.com/buhrmi/nuxt-url-sync), since it does almost the same as this plugin while being way more progressive.
+
 Sync Vue Component state with browser URL params
 
 Makes for easy bookmarking and sharing of vue state using the browser URL, also works server-side when using vue-router.
