@@ -1,6 +1,6 @@
 # vue-sync
 
-> NOTE: Check out [nuxt-url-sync](https://github.com/buhrmi/nuxt-url-sync) to use it with SSR
+> NOTE: Check out [nuxt-url-sync](https://github.com/buhrmi/nuxt-url-sync) to for a version optimized for nuxt
 
 Sync Vue Component state with browser URL params
 
