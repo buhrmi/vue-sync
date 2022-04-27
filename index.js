@@ -79,7 +79,7 @@
       param = param.param
     } 
     return function(vm, path) {
-      initialUrlValue = getParamValue(param);
+      let initialUrlValue = getParamValue(param);
       if (initialUrlValue) {
         vue.set(vm, path, initialUrlValue);
       }
