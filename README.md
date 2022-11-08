@@ -2,6 +2,8 @@
 
 > NOTE: Check out [nuxt-url-sync](https://github.com/buhrmi/nuxt-url-sync) to for a version optimized for nuxt
 
+> NOTE2: This is unmaintained as I've switched to [Svelte](https://svelte.dev) as should you.
+
 Sync Vue Component state with browser URL params
 
 Makes for easy bookmarking and sharing of vue state using the browser URL, also works server-side when using vue-router.
